@@ -17,5 +17,9 @@ public partial class FishDescription
 
     public string LifeCycle { get; set; } = null!;
 
+    public int? FishFamily { get; set; }
+
     public virtual Fish Fish { get; set; } = null!;
+
+    public virtual FishFamily? FishFamilyNavigation { get; set; }
 }

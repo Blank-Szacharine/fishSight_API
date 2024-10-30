@@ -10,6 +10,4 @@ public partial class Gallery
     public int FishId { get; set; }
 
     public byte[] FishImg { get; set; } = null!;
-
-    public virtual Fish Fish { get; set; } = null!;
 }

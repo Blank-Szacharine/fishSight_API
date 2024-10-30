@@ -9,9 +9,9 @@ public partial class Environment
 
     public int FishId { get; set; }
 
-    public int MunicipalityId { get; set; }
+    public int? RegionId { get; set; }
 
     public virtual Fish Fish { get; set; } = null!;
 
-    public virtual Municipality Municipality { get; set; } = null!;
+    public virtual Region? Region { get; set; }
 }

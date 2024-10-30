@@ -46,6 +46,35 @@ public class FishRepository : IFishRepository
 
     }
 
+
+    public async Task<IEnumerable<shortModel>> GetFishByReg(int region_id)
+    {
+        var fishList = await _ctx.Regions
+            .Where(r => r.RegionId == region_id)
+            .Include(r => r.Environments)
+                .ThenInclude(e => e.Fish)
+                    .ThenInclude(f => f.FishDescriptions)
+            .SelectMany(r => r.Environments.Select(e => e.Fish))
+            .ToListAsync();
+
+        var fish = new List<shortModel>();
+        foreach (var fsh in fishList)
+        {
+            var f = new shortModel
+            {
+                fish_id = fsh.FishId, // Access FishId directly since fishList is already flattened
+                Fish_name = fsh.GeneralName,
+                Scientific_name = fsh.ScientificName,
+                fish_img = fsh.FishImg,
+                Fish_Description = fsh.FishDescriptions.FirstOrDefault()?.Description // Use null-conditional operator
+            };
+            fish.Add(f);
+        }
+
+        return fish;
+    }
+
+
     public async Task<IEnumerable<Fish_complete>> GetFishAsync()
     {
 
@@ -85,10 +114,12 @@ public class FishRepository : IFishRepository
     public async Task<Fish_complete> GetFishByIdAsync(int Id)
     {
 
-        var fish = await _ctx.Fish.Include(x => x.FishDescriptions)
+        var fish = await _ctx.Fish
                            .Include(x => x.FishLengths)
                            .Include(x => x.LocalNames)
                            .Include(x => x.Environments)
+                           .Include(x => x.FishDescriptions)
+                                .ThenInclude(fd => fd.FishFamilyNavigation)
                            .SingleOrDefaultAsync(f => f.FishId == Id);
 
         // If no fish is found, return null or handle accordingly
@@ -104,6 +135,8 @@ public class FishRepository : IFishRepository
             Fish_name = fish.GeneralName,
             Scientific_name = fish.ScientificName,
             fish_img = fish.FishImg,
+            family_id = fish.FishDescriptions.FirstOrDefault().FishFamilyNavigation.Id,
+            Fish_family = fish.FishDescriptions.FirstOrDefault().FishFamilyNavigation.Family,
             Fish_Description = fish.FishDescriptions.FirstOrDefault()?.Description,
             Fish_biology = fish.FishDescriptions.FirstOrDefault()?.Biology,
             Lifecycle = fish.FishDescriptions.FirstOrDefault()?.LifeCycle,
@@ -116,6 +149,62 @@ public class FishRepository : IFishRepository
         return completeFish;
 
     }
+
+
+    public async Task<envFish> GetFishByNameAsync(string Id)
+    {
+        var fish = await _ctx.Fish
+            .Include(x => x.FishDescriptions)
+            .SingleOrDefaultAsync(f => f.GeneralName == Id);
+
+        if (fish == null)
+        {
+            return null; // Handle case where no fish is found
+        }
+
+        // Create a new envFish object
+        var envFish = new envFish
+        {
+            fish_img = fish.FishImg,
+            Fish_Name = fish.GeneralName,
+            Scientific_Name = fish.ScientificName,
+            Fish_Description = fish.FishDescriptions.FirstOrDefault()?.Description,
+            Fish_Id = fish.FishId,
+        };
+
+        return envFish; // Return the single envFish object
+    }
+
+    public async Task<IEnumerable<shortModel>> GetFishByFam(int family_id)
+    {
+        // Get all fish descriptions associated with the specified family
+        var fishDescriptions = await _ctx.FishFamilies
+            .Where(x => x.Id == family_id)
+            .Include(x => x.FishDescriptions)
+                .ThenInclude(fd => fd.Fish) // Include the Fish associated with each FishDescription
+            .SelectMany(x => x.FishDescriptions)
+            .ToListAsync();
+
+        var fish = new List<shortModel>();
+
+        // Iterate through each FishDescription to create the shortModel list
+        foreach (var fd in fishDescriptions)
+        {
+            var f = new shortModel
+            {
+                fish_id = fd.Fish.FishId,
+                Fish_name = fd.Fish.GeneralName,
+                Scientific_name = fd.Fish.ScientificName,
+                fish_img = fd.Fish.FishImg,
+                Fish_Description = fd.Description // Use the description from FishDescription
+            };
+            fish.Add(f);
+        }
+
+        return fish;
+    }
+
+
 
 }
 

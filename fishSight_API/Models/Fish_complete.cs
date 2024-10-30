@@ -10,7 +10,9 @@ namespace fishSight_API.Models
         public string Fish_Description { get; set; }
         public string Fish_biology { get; set; }
         public byte[] fish_img { get; set; }
+        public string Fish_family { get; set; }
 
+        public int family_id { get; set; }
 
         public string Lifecycle { get; set; }
 

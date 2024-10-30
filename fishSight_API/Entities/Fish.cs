@@ -19,8 +19,6 @@ public partial class Fish
 
     public virtual ICollection<FishLength> FishLengths { get; set; } = new List<FishLength>();
 
-    public virtual ICollection<Gallery> Galleries { get; set; } = new List<Gallery>();
-
     public virtual ICollection<LocalName> LocalNames { get; set; } = new List<LocalName>();
 
     public virtual ICollection<WaterEnvironment> WaterEnvironments { get; set; } = new List<WaterEnvironment>();

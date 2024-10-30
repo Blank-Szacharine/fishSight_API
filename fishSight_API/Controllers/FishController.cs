@@ -41,6 +41,36 @@ namespace fishSight_APIDatabase.Controllers
             }
         }
 
+        [HttpGet("ByName/{Id}", Name = "GetFishByName")]
+        public async Task<IActionResult> GetFishbyName(string Id)
+        {
+            try
+            {
+                var Fish = await _repository.GetFishByNameAsync(Id);
+                if (Fish == null)
+                {
+                    return NotFound(new
+                    {
+                        StatusCode = 404,
+                        message = "Record not found"
+                    });
+                }
+                return Ok(Fish);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new
+                    {
+                        StatusCode = 500,
+                        message = ex.Message
+                    });
+            }
+        }
+
+
         [HttpGet("ById/{Id}", Name = "GetFishById")]
         public async Task<IActionResult> GetFishbyId(int Id)
         {
@@ -98,6 +128,65 @@ namespace fishSight_APIDatabase.Controllers
                     });
             }
         }
+        [HttpGet("ByRegion/{region_id}", Name = "GetFishByReg")]
+        public async Task<IActionResult> GetFishbyRegion(int region_id)
+        {
+            try
+            {
+                var Fish = await _repository.GetFishByReg(region_id);
+                if (Fish == null)
+                {
+                    return NotFound(new
+                    {
+                        StatusCode = 404,
+                        message = "Record not found"
+                    });
+                }
+                return Ok(Fish);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new
+                    {
+                        StatusCode = 500,
+                        message = ex.Message
+                    });
+            }
+        }
+
+
+        [HttpGet("ByFamily/{family_id}", Name = "GetFishByFam")]
+        public async Task<IActionResult> GetFishbyFamily(int family_id)
+        {
+            try
+            {
+                var Fish = await _repository.GetFishByFam(family_id);
+                if (Fish == null)
+                {
+                    return NotFound(new
+                    {
+                        StatusCode = 404,
+                        message = "Record not found"
+                    });
+                }
+                return Ok(Fish);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new
+                    {
+                        StatusCode = 500,
+                        message = ex.Message
+                    });
+            }
+        }
+
 
     }
 }
