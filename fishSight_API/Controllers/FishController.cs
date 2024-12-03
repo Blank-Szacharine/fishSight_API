@@ -1,8 +1,10 @@
 ﻿
 using fishSight_API.Entities;
+using fishSight_API.Models;
 using fishSight_API.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace fishSight_APIDatabase.Controllers
 {
@@ -12,10 +14,12 @@ namespace fishSight_APIDatabase.Controllers
     {
         private readonly IFishRepository _repository;
         private readonly ILogger<FishController> _logger;
-        public FishController(IFishRepository repository, ILogger<FishController> logger)
+        private readonly FinsapContext _ctx;
+        public FishController(IFishRepository repository, ILogger<FishController> logger, FinsapContext ctx)
         {
             _repository = repository;
             _logger = logger;
+            _ctx = ctx;
         }
 
         [HttpGet]
@@ -128,12 +132,12 @@ namespace fishSight_APIDatabase.Controllers
                     });
             }
         }
-        [HttpGet("ByRegion/{region_id}", Name = "GetFishByReg")]
-        public async Task<IActionResult> GetFishbyRegion(int region_id)
+        [HttpGet("ByRegion/{region}", Name = "GetFishByReg")]
+        public async Task<IActionResult> GetFishbyRegion(string region)
         {
             try
             {
-                var Fish = await _repository.GetFishByReg(region_id);
+                var Fish = await _repository.GetFishByReg(region);
                 if (Fish == null)
                 {
                     return NotFound(new
@@ -187,6 +191,95 @@ namespace fishSight_APIDatabase.Controllers
             }
         }
 
+
+        [HttpGet("ByNameall", Name = "GetFishByNameall")]
+        public async Task<IActionResult> GetFishbyNameall()
+        {
+            try
+            {
+                var Fish = await _repository.GetFishByNameallAsync();
+                if (Fish == null)
+                {
+                    return NotFound(new
+                    {
+                        StatusCode = 404,
+                        message = "Record not found"
+                    });
+                }
+                return Ok(Fish);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new
+                    {
+                        StatusCode = 500,
+                        message = ex.Message
+                    });
+            }
+        }
+
+
+
+        [HttpGet("ByFamilyall", Name = "GetFamily")]
+        public async Task<IActionResult> GetFamily()
+        {
+            try
+            {
+                var Fish = await _ctx.FishFamilies.ToListAsync();
+                if (Fish == null)
+                {
+                    return NotFound(new
+                    {
+                        StatusCode = 404,
+                        message = "Record not found"
+                    });
+                }
+                return Ok(Fish);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new
+                    {
+                        StatusCode = 500,
+                        message = ex.Message
+                    });
+            }
+        }
+
+        [HttpPost("AddFish", Name = "addFish")]
+        public async Task<IActionResult> AddFish(Fish_complete fish)
+        {
+            try
+            {
+                var Fish = await _ctx.FishFamilies.ToListAsync();
+                if (Fish == null)
+                {
+                    return NotFound(new
+                    {
+                        StatusCode = 404,
+                        message = "Record not found"
+                    });
+                }
+                return Ok(Fish);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new
+                    {
+                        StatusCode = 500,
+                        message = ex.Message
+                    });
+            }
+        }
 
     }
 }

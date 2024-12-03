@@ -8,5 +8,7 @@
         public string Fish_Description { get; set; }
         public byte[] fish_img { get; set; }
 
+        public int family_id { get; set; }
+        public string family { get; set; }
     }
 }

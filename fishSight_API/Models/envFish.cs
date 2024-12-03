@@ -12,5 +12,9 @@
 
         public byte[] fish_img { get; set; }
 
+        public int water_id { get; set; }
+
+
+
     }
 }

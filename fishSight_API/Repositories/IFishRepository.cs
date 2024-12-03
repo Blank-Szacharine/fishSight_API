@@ -8,7 +8,8 @@ namespace fishSight_API.Repositories
         Task<IEnumerable<envFish>> GetFishByEnv(int water_id);
         Task<IEnumerable<shortModel>> GetFishByFam(int family_id);
         Task<Fish_complete> GetFishByIdAsync(int Id);
+        Task<List<envFish>> GetFishByNameallAsync();
         Task<envFish> GetFishByNameAsync(string Id);
-        Task<IEnumerable<shortModel>> GetFishByReg(int region_id);
+        Task<IEnumerable<shortModel>> GetFishByReg(string region);
     }
 }
